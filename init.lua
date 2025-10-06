@@ -221,6 +221,21 @@ vim.api.nvim_create_autocmd('TextYankPost', {
     vim.hl.on_yank()
   end,
 })
+ 
+-- Disable auto-indentation for YAML files
+vim.api.nvim_create_autocmd('FileType', {
+  desc = 'Disable auto-indentation for YAML',
+  pattern = { 'yaml', 'yml' },
+  group = vim.api.nvim_create_augroup('yaml-indent', { clear = true }),
+  callback = function()
+    vim.bo.autoindent = true -- Keep basic indent
+    vim.bo.smartindent = false -- Disable smart indent
+    vim.bo.cindent = false -- Disable C-style indent (handles : indentation)
+    vim.bo.indentexpr = '' -- Disable indent expressions
+    vim.bo.cinkeys = '' -- Disable keys that trigger auto-indent
+    vim.bo.indentkeys = '' -- Disable indent trigger keys
+  end,
+})
 
 vim.o.exrc = true
 vim.o.secure = true
@@ -679,7 +694,17 @@ require('lazy').setup({
       local servers = {
         clangd = {},
         gopls = {},
-        -- pyright = {},
+        pyright = {
+          settings = {
+            python = {
+              analysis = {
+                autoSearchPaths = true,
+                useLibraryCodeForTypes = true,
+                diagnosticMode = 'workspace',
+              }
+            }
+          }
+        },
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
@@ -701,6 +726,37 @@ require('lazy').setup({
               },
               -- You can toggle below to ignore Lua_LS's noisy `missing-fields` warnings
               -- diagnostics = { disable = { 'missing-fields' } },
+            },
+          },
+        },
+
+        yamlls = {
+          settings = {
+            yaml = {
+              schemaStore = {
+                enable = true, -- Enable schema store for common schemas
+                url = "https://www.schemastore.org/api/json/catalog.json",
+              },
+              schemas = {
+                -- GitHub Actions
+                ["https://json.schemastore.org/github-workflow.json"] = ".github/workflows/*",
+                -- Azure Pipelines
+                ["https://raw.githubusercontent.com/microsoft/azure-pipelines-vscode/main/service-schema.json"] = {
+                  "azure-pipelines*.yml",
+                  "azure-pipelines*.yaml",
+                  "*.azure-pipelines.yml",
+                  "*.azure-pipelines.yaml",
+                  "azure-*.yml",
+                  "pipelines/*.yml",
+                  "pipelines/*.yaml",
+                },
+              },
+              format = {
+                enable = false, -- Use yamlfmt instead
+              },
+              validate = true,
+              hover = true,
+              completion = true,
             },
           },
         },
@@ -774,6 +830,8 @@ require('lazy').setup({
       end,
       formatters_by_ft = {
         lua = { 'stylua' },
+        yaml = { 'yamlfmt' },
+        json = { 'prettier' },
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
         --
@@ -960,7 +1018,7 @@ require('lazy').setup({
         --  the list of additional_vim_regex_highlighting and disabled languages for indent.
         additional_vim_regex_highlighting = { 'ruby' },
       },
-      indent = { enable = true, disable = { 'ruby' } },
+      indent = { enable = true, disable = { 'ruby', 'yaml' } },
     },
     -- There are additional nvim-treesitter modules that you can use to interact
     -- with nvim-treesitter. You should go explore a few and see what interests you:

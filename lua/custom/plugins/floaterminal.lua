@@ -65,6 +65,6 @@ return {
     vim.api.nvim_create_user_command('Floaterminal', toggle_terminal, {})
   end,
   keys = {
-    { '<leader>ft', '<cmd>Floaterminal<cr>', desc = '[F]loating [T]erminal' },
+    { '<leader>t', '<cmd>Floaterminal<cr>', desc = '[F]loating [T]erminal' },
   },
 }
