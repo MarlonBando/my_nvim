@@ -221,7 +221,7 @@ vim.api.nvim_create_autocmd('TextYankPost', {
     vim.hl.on_yank()
   end,
 })
- 
+
 -- Disable auto-indentation for YAML files
 vim.api.nvim_create_autocmd('FileType', {
   desc = 'Disable auto-indentation for YAML',
@@ -239,6 +239,17 @@ vim.api.nvim_create_autocmd('FileType', {
 
 vim.o.exrc = true
 vim.o.secure = true
+
+-- Set tab/indentation for JavaScript/TypeScript/React files
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = { 'javascript', 'javascriptreact', 'typescript', 'typescriptreact' },
+  callback = function()
+    vim.opt_local.tabstop = 2 -- Number of spaces a tab counts for
+    vim.opt_local.shiftwidth = 2 -- Number of spaces for each indentation
+    vim.opt_local.softtabstop = 2 -- Number of spaces for tab in insert mode
+    vim.opt_local.expandtab = true -- Convert tabs to spaces
+  end,
+})
 
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
@@ -582,7 +593,7 @@ require('lazy').setup({
 
           -- Fuzzy find all the symbols in your current document.
           --  Symbols are things like variables, functions, types, etc.
-          map('gO', require('telescope.builtin').lsp_document_symbols, 'Open Document Symbols')
+          map('<Space>o', require('telescope.builtin').lsp_document_symbols, 'Open Document Symbols')
 
           -- Fuzzy find all the symbols in your current workspace.
           --  Similar to document symbols, except searches over your entire project.
@@ -701,9 +712,9 @@ require('lazy').setup({
                 autoSearchPaths = true,
                 useLibraryCodeForTypes = true,
                 diagnosticMode = 'workspace',
-              }
-            }
-          }
+              },
+            },
+          },
         },
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
@@ -735,20 +746,20 @@ require('lazy').setup({
             yaml = {
               schemaStore = {
                 enable = true, -- Enable schema store for common schemas
-                url = "https://www.schemastore.org/api/json/catalog.json",
+                url = 'https://www.schemastore.org/api/json/catalog.json',
               },
               schemas = {
                 -- GitHub Actions
-                ["https://json.schemastore.org/github-workflow.json"] = ".github/workflows/*",
+                ['https://json.schemastore.org/github-workflow.json'] = '.github/workflows/*',
                 -- Azure Pipelines
-                ["https://raw.githubusercontent.com/microsoft/azure-pipelines-vscode/main/service-schema.json"] = {
-                  "azure-pipelines*.yml",
-                  "azure-pipelines*.yaml",
-                  "*.azure-pipelines.yml",
-                  "*.azure-pipelines.yaml",
-                  "azure-*.yml",
-                  "pipelines/*.yml",
-                  "pipelines/*.yaml",
+                ['https://raw.githubusercontent.com/microsoft/azure-pipelines-vscode/main/service-schema.json'] = {
+                  'azure-pipelines*.yml',
+                  'azure-pipelines*.yaml',
+                  '*.azure-pipelines.yml',
+                  '*.azure-pipelines.yaml',
+                  'azure-*.yml',
+                  'pipelines/*.yml',
+                  'pipelines/*.yaml',
                 },
               },
               format = {
@@ -1037,7 +1048,7 @@ require('lazy').setup({
   --  Here are some example plugins that I've included in the Kickstart repository.
   --  Uncomment any of the lines below to enable them (you will need to restart nvim).
   --
-  -- require 'kickstart.plugins.debug',
+  require 'kickstart.plugins.debug',
   -- require 'kickstart.plugins.indent_line',
   -- require 'kickstart.plugins.lint',
   -- require 'kickstart.plugins.autopairs',
